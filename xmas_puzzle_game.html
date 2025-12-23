@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystery Puzzle Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .progress-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .progress-word {
+            padding: 10px 15px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #999;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .progress-word.completed {
+            background: #28a745;
+            color: white;
+        }
+        
+        .puzzle-area {
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .puzzle {
+            display: none;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .puzzle.active {
+            display: block;
+        }
+        
+        .puzzle-title {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .emoji-large {
+            font-size: 100px;
+            margin: 20px 0;
+        }
+        
+        .question {
+            font-size: 1.3em;
+            color: #333;
+            line-height: 1.6;
+            margin: 20px 0;
+        }
+        
+        .letter-display {
+            font-size: 100px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+        
+        .riddle {
+            font-size: 1.2em;
+            color: #333;
+            line-height: 1.8;
+            margin: 20px 0;
+            padding: 20px;
+            background: #e8f4f8;
+            border-radius: 10px;
+            font-style: italic;
+        }
+        
+        .light-switch {
+            width: 80px;
+            height: 140px;
+            background: #e0e0e0;
+            border: 4px solid #333;
+            border-radius: 10px;
+            margin: 20px auto;
+            position: relative;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .switch-toggle {
+            width: 40px;
+            height: 60px;
+            background: #ff6b35;
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            transform: translateX(-50%);
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .arrow {
+            font-size: 50px;
+            color: #ff6b35;
+        }
+        
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .image-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+        }
+        
+        .emoji-small {
+            font-size: 40px;
+        }
+        
+        .label {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        
+        .instruction {
+            font-size: 1.1em;
+            color: #333;
+            margin: 15px 0;
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        .clock-calendar {
+            font-size: 80px;
+            margin: 10px;
+        }
+        
+        .clue {
+            font-size: 1em;
+            color: #666;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        .answer-box {
+            margin-top: 30px;
+        }
+        
+        input {
+            font-size: 1.5em;
+            padding: 12px;
+            width: 200px;
+            text-align: center;
+            border: 3px solid #667eea;
+            border-radius: 8px;
+            text-transform: uppercase;
+        }
+        
+        button {
+            font-size: 1.2em;
+            padding: 12px 30px;
+            margin-top: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #764ba2;
+        }
+        
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            min-height: 30px;
+        }
+        
+        .correct {
+            color: #28a745;
+        }
+        
+        .incorrect {
+            color: #dc3545;
+        }
+        
+        .final-reveal {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .final-reveal.active {
+            display: block;
+        }
+        
+        .final-message {
+            font-size: 2.5em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 30px 0;
+            line-height: 1.4;
+            animation: fadeIn 1s;
+        }
+        
+        .celebration {
+            font-size: 80px;
+            margin: 20px 0;
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .hint {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🎯 Mystery Puzzle!</h1>
+            <p style="color: #666; font-size: 1.1em;">Solve each puzzle to reveal a special message!</p>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-word" id="word1">???</div>
+            <div class="progress-word" id="word2">???</div>
+            <div class="progress-word" id="word3">???</div>
+            <div class="progress-word" id="word4">???</div>
+            <div class="progress-word" id="word5">???</div>
+            <div class="progress-word" id="word6">???</div>
+        </div>
+        
+        <div class="puzzle-area">
+            <!-- Puzzle 1 -->
+            <div class="puzzle active" id="puzzle1">
+                <div class="puzzle-title">Puzzle 1 of 6</div>
+                <div class="emoji-large">👥</div>
+                <p class="question">What pronoun means "you and me together"?<br>(2 letters)</p>
+                <div class="answer-box">
+                    <input type="text" id="answer1" maxlength="2" placeholder="??">
+                    <br>
+                    <button onclick="checkAnswer(1, 'WE')">Check Answer</button>
+                    <div class="result" id="result1"></div>
+                </div>
+            </div>
+            
+            <!-- Puzzle 2 -->
+            <div class="puzzle" id="puzzle2">
+                <div class="puzzle-title">Puzzle 2 of 6</div>
+                <div class="letter-display">R</div>
+                <p class="question">What 3-letter word sounds exactly like the letter "R"?</p>
+                <div class="answer-box">
+                    <input type="text" id="answer2" maxlength="3" placeholder="???">
+                    <br>
+                    <button onclick="checkAnswer(2, 'ARE')">Check Answer</button>
+                    <div class="result" id="result2"></div>
+                </div>
+            </div>
+            
+            <!-- Puzzle 3 -->
+            <div class="puzzle" id="puzzle3">
+                <div class="puzzle-title">Puzzle 3 of 6</div>
+                <div class="emoji-large">🤔</div>
+                <div class="riddle">
+                    I start with G, end with G, and mean you're leaving. Add -ING to what you do when you leave. What word am I?
+                </div>
+                <div class="answer-box">
+                    <input type="text" id="answer3" maxlength="5" placeholder="?????">
+                    <br>
+                    <button onclick="checkAnswer(3, 'GOING')">Check Answer</button>
+                    <div class="result" id="result3"></div>
+                    <div class="hint" id="hint3"></div>
+                </div>
+            </div>
+            
+            <!-- Puzzle 4 -->
+            <div class="puzzle" id="puzzle4">
+                <div class="puzzle-title">Puzzle 4 of 6</div>
+                <div class="light-switch">
+                    <div class="switch-toggle"></div>
+                </div>
+                <div class="arrow">⬆️</div>
+                <p class="question">When you flip a switch up, the light is _____?<br>(2 letters)</p>
+                <div class="answer-box">
+                    <input type="text" id="answer4" maxlength="2" placeholder="??">
+                    <br>
+                    <button onclick="checkAnswer(4, 'ON')">Check Answer</button>
+                    <div class="result" id="result4"></div>
+                </div>
+            </div>
+            
+            <!-- Puzzle 5 -->
+            <div class="puzzle" id="puzzle5">
+                <div class="puzzle-title">Puzzle 5 of 6</div>
+                <div class="images-grid">
+                    <div class="image-item">
+                        <div class="emoji-small">🚐</div>
+                        <div class="label">Van</div>
+                    </div>
+                    <div class="image-item">
+                        <div class="emoji-small">🍎</div>
+                        <div class="label">Apple</div>
+                    </div>
+                    <div class="image-item">
+                        <div class="emoji-small">🐱</div>
+                        <div class="label">Cat</div>
+                    </div>
+                    <div class="image-item">
+                        <div class="emoji-small">🍎</div>
+                        <div class="label">Apple</div>
+                    </div>
+                    <div class="image-item">
+                        <div class="emoji-small">🌲</div>
+                        <div class="label">Tree</div>
+                    </div>
+                    <div class="image-item">
+                        <div class="emoji-small">🍦</div>
+                        <div class="label">Ice cream</div>
+                    </div>
+                    <div class="image-item">
+                        <div class="emoji-small">🐙</div>
+                        <div class="label">Octopus</div>
+                    </div>
+                    <div class="image-item">
+                        <div class="emoji-small">🎾</div>
+                        <div class="label">Net</div>
+                    </div>
+                </div>
+                <div class="instruction">📝 Take the FIRST LETTER of each picture</div>
+                <div class="answer-box">
+                    <input type="text" id="answer5" maxlength="8" placeholder="????????">
+                    <br>
+                    <button onclick="checkAnswer(5, 'VACATION')">Check Answer</button>
+                    <div class="result" id="result5"></div>
+                </div>
+            </div>
+            
+            <!-- Puzzle 6 -->
+            <div class="puzzle" id="puzzle6">
+                <div class="puzzle-title">Final Puzzle!</div>
+                <div class="clock-calendar">⏰📅</div>
+                <div class="riddle">
+                    The day after today, but before the day after that.
+                    <div class="clue">Starts with T, ends with W (8 letters)</div>
+                </div>
+                <div class="answer-box">
+                    <input type="text" id="answer6" maxlength="8" placeholder="????????">
+                    <br>
+                    <button onclick="checkAnswer(6, 'TOMORROW')">Check Answer</button>
+                    <div class="result" id="result6"></div>
+                </div>
+            </div>
+            
+            <!-- Final Reveal -->
+            <div class="final-reveal" id="finalReveal">
+                <div class="celebration">🎉🎊✨</div>
+                <div class="final-message">
+                    WE ARE GOING ON<br>VACATION TOMORROW!
+                </div>
+                <div class="celebration">🏖️🌴🎒</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPuzzle = 1;
+        let attempts = {};
+        
+        function checkAnswer(puzzleNum, correctAnswer) {
+            const answer = document.getElementById('answer' + puzzleNum).value.toUpperCase();
+            const result = document.getElementById('result' + puzzleNum);
+            
+            if (!attempts[puzzleNum]) {
+                attempts[puzzleNum] = 0;
+            }
+            attempts[puzzleNum]++;
+            
+            if (answer === correctAnswer) {
+                result.className = 'result correct';
+                result.textContent = '✓ Correct! The word is: ' + correctAnswer;
+                
+                document.getElementById('word' + puzzleNum).textContent = correctAnswer;
+                document.getElementById('word' + puzzleNum).classList.add('completed');
+                
+                setTimeout(() => {
+                    if (puzzleNum < 6) {
+                        document.getElementById('puzzle' + puzzleNum).classList.remove('active');
+                        currentPuzzle++;
+                        document.getElementById('puzzle' + currentPuzzle).classList.add('active');
+                        document.getElementById('answer' + currentPuzzle).focus();
+                    } else {
+                        document.getElementById('puzzle6').classList.remove('active');
+                        document.getElementById('finalReveal').classList.add('active');
+                    }
+                }, 1500);
+            } else {
+                result.className = 'result incorrect';
+                result.textContent = '✗ Try again!';
+                
+                if (puzzleNum === 2 && attempts[puzzleNum] >= 2) {
+                    result.textContent = '✗ Try again! Say the letter "R" out loud.';
+                }
+                
+                if (puzzleNum === 3 && attempts[puzzleNum] >= 2) {
+                    const hint = document.getElementById('hint3');
+                    hint.textContent = 'Hint: What do you do when you GO somewhere? Add -ING to GO...';
+                }
+            }
+        }
+        
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const answerInput = document.getElementById('answer' + currentPuzzle);
+                if (document.activeElement === answerInput) {
+                    const correctAnswers = ['WE', 'ARE', 'GOING', 'ON', 'VACATION', 'TOMORROW'];
+                    checkAnswer(currentPuzzle, correctAnswers[currentPuzzle - 1]);
+                }
+            }
+        });
+        
+        document.getElementById('answer1').focus();
+    </script>
+</body>
+</html>
